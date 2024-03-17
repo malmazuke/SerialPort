@@ -11,16 +11,15 @@ import ORSSerial
 
 public protocol SerialPort {
 
-    // MARK: - Properties
-
     var isOpen: Bool { get }
     var path: String { get }
     var name: String { get }
-    var baudRate: BAUDRate { get }
-    var stopBits: StopBits { get }
-    var dataBits: DataBits { get }
-    var echoesReceivedData: Bool { get }
-    var parity: SerialPortParity { get }
+
+    var baudRate: BAUDRate { get set }
+    var stopBits: StopBits { get set }
+    var dataBits: DataBits { get set }
+    var echoesReceivedData: Bool { get set }
+    var parity: SerialPortParity { get set }
 
     var usesRTSCTSFlowControl: Bool { get set }
     var usesDTRDSRFlowControl: Bool { get set }
@@ -74,23 +73,48 @@ class DefaultSerialPort: SerialPort {
     }
 
     var baudRate: BAUDRate {
-        .rate(with: orsSerialPort.baudRate)
+        get {
+            .rate(with: orsSerialPort.baudRate)
+        }
+        set {
+            orsSerialPort.baudRate = newValue.intValue as NSNumber
+        }
     }
 
     var stopBits: StopBits {
-        .stopBits(with: orsSerialPort.numberOfStopBits)
+        get {
+            .stopBits(with: orsSerialPort.numberOfStopBits)
+        }
+        set {
+            orsSerialPort.numberOfStopBits = newValue.intValue
+        }
     }
 
     var dataBits: DataBits {
-        .dataBits(with: orsSerialPort.numberOfDataBits)
+        get {
+            .dataBits(with: orsSerialPort.numberOfDataBits)
+        }
+        set {
+            orsSerialPort.numberOfDataBits = newValue.intValue
+        }
     }
 
     var echoesReceivedData: Bool {
-        orsSerialPort.shouldEchoReceivedData
+        get {
+            orsSerialPort.shouldEchoReceivedData
+        }
+        set {
+            orsSerialPort.shouldEchoReceivedData = newValue
+        }
     }
 
     var parity: SerialPortParity {
-        .parity(with: orsSerialPort.parity)
+        get {
+            .parity(with: orsSerialPort.parity)
+        }
+        set {
+            orsSerialPort.parity = newValue.orsSerialPortParity
+        }
     }
 
     var usesRTSCTSFlowControl: Bool {
@@ -165,21 +189,14 @@ class DefaultSerialPort: SerialPort {
 
         self.orsSerialPort = serialPort
 
-        configureORSSerialPort(orsSerialPort: self.orsSerialPort, withConfiguration: configuration)
-    }
-
-    private func configureORSSerialPort(
-        orsSerialPort: ORSSerialPort,
-        withConfiguration configuration: SerialPortConfiguration
-    ) {
-        orsSerialPort.baudRate = configuration.baudRate.intValue as NSNumber
-        orsSerialPort.numberOfStopBits = configuration.stopBits.intValue
-        orsSerialPort.numberOfDataBits = configuration.dataBits.intValue
-        orsSerialPort.shouldEchoReceivedData = configuration.shouldEchoReceivedData
-        orsSerialPort.parity = configuration.parity.orsSerialPortParity
-        orsSerialPort.usesDTRDSRFlowControl = configuration.usesDTRDSRFlowControl
-        orsSerialPort.usesRTSCTSFlowControl = configuration.usesRTSCTSFlowControl
-        orsSerialPort.usesDCDOutputFlowControl = configuration.usesDCDOutputFlowControl
+        self.baudRate = configuration.baudRate
+        self.stopBits = configuration.stopBits
+        self.dataBits = configuration.dataBits
+        self.echoesReceivedData = configuration.shouldEchoReceivedData
+        self.parity = configuration.parity
+        self.usesDTRDSRFlowControl = configuration.usesDTRDSRFlowControl
+        self.usesRTSCTSFlowControl = configuration.usesRTSCTSFlowControl
+        self.usesDCDOutputFlowControl = configuration.usesDCDOutputFlowControl
     }
 
 }
