@@ -1,7 +1,7 @@
 import XCTest
-@testable import SerialPort_Combine
+@testable import SerialPort
 
-final class SerialPort_CombineTests: XCTestCase {
+final class SerialPortTests: XCTestCase {
     func testExample() throws {
         // XCTest Documentation
         // https://developer.apple.com/documentation/xctest
