@@ -7,196 +7,63 @@
 
 import Combine
 import IOKit
-import ORSSerial
 
+///
+/// A protocol defining essential functionality and properties of a connected serial device.
+///
 public protocol SerialPort {
 
+    /// Indicates whether the serial device is currently open.
     var isOpen: Bool { get }
+
+    /// The path to the serial device in the file system.
     var path: String { get }
+
+    /// The human-readable name of the serial device.
     var name: String { get }
 
+    /// The current baud rate of the serial device.
     var baudRate: BAUDRate { get set }
+
+    /// The current number of stop bits used by the serial device.
     var stopBits: StopBits { get set }
+
+    /// The current number of data bits used by the serial device.
     var dataBits: DataBits { get set }
+
+    /// Indicates whether the serial device echoes received data back to the sender.
     var echoesReceivedData: Bool { get set }
+
+    /// The current parity setting used by the serial device.
     var parity: SerialPortParity { get set }
 
+    /// Indicates whether the serial device uses RTS/CTS flow control.
     var usesRTSCTSFlowControl: Bool { get set }
+
+    /// Indicates whether the serial device uses DTR/DSR flow control.
     var usesDTRDSRFlowControl: Bool { get set }
+
+    /// Indicates whether the serial device uses DCD output flow control.
     var usesDCDOutputFlowControl: Bool { get set }
 
     // MARK: - Port Pins
 
+    /// The value of the RTS (Request to Send) pin on the serial device.
     var rts: Bool { get set }
+
+    /// The value of the DTR (Data Terminal Ready) pin on the serial device.
     var dtr: Bool { get set }
+
+    /// The value of the CTS (Clear to Send) pin on the serial device.
     var cts: Bool { get }
+
+    /// The value of the DSR (Data Set Ready) pin on the serial device.
     var dsr: Bool { get }
+
+    /// The value of the DCD (Data Carrier Detect) pin on the serial device.
     var dcd: Bool { get }
 
+    /// The IOKit device object representing the serial device.
     var ioKitDevice: io_object_t { get }
-
-    // MARK: - Initialisers
-
-    init?(configuration: SerialPortConfiguration)
-
-    // MARK: - Functions
-}
-
-public struct SerialPortConfiguration {
-
-    let path: String
-    let baudRate: BAUDRate = .rate19200
-    let stopBits: StopBits = .one
-    let dataBits: DataBits = .eight
-    let parity: SerialPortParity = .none
-    let shouldEchoReceivedData: Bool = false
-    let usesRTSCTSFlowControl: Bool = false
-    let usesDTRDSRFlowControl: Bool = false
-    let usesDCDOutputFlowControl: Bool = false
-    let rts: Bool = false
-    let dtr: Bool = false
-
-}
-
-class StandardSerialPort: SerialPort {
-
-    var isOpen: Bool {
-        orsSerialPort.isOpen
-    }
-
-    var path: String {
-        orsSerialPort.path
-    }
-
-    var name: String {
-        orsSerialPort.name
-    }
-
-    var baudRate: BAUDRate {
-        get {
-            .rate(with: orsSerialPort.baudRate)
-        }
-        set {
-            orsSerialPort.baudRate = newValue.intValue as NSNumber
-        }
-    }
-
-    var stopBits: StopBits {
-        get {
-            .stopBits(with: orsSerialPort.numberOfStopBits)
-        }
-        set {
-            orsSerialPort.numberOfStopBits = newValue.intValue
-        }
-    }
-
-    var dataBits: DataBits {
-        get {
-            .dataBits(with: orsSerialPort.numberOfDataBits)
-        }
-        set {
-            orsSerialPort.numberOfDataBits = newValue.intValue
-        }
-    }
-
-    var echoesReceivedData: Bool {
-        get {
-            orsSerialPort.shouldEchoReceivedData
-        }
-        set {
-            orsSerialPort.shouldEchoReceivedData = newValue
-        }
-    }
-
-    var parity: SerialPortParity {
-        get {
-            .parity(with: orsSerialPort.parity)
-        }
-        set {
-            orsSerialPort.parity = newValue.orsSerialPortParity
-        }
-    }
-
-    var usesRTSCTSFlowControl: Bool {
-        get {
-            orsSerialPort.usesRTSCTSFlowControl
-        }
-        set {
-            orsSerialPort.usesRTSCTSFlowControl = newValue
-        }
-    }
-
-    var usesDTRDSRFlowControl: Bool {
-        get {
-            orsSerialPort.usesDTRDSRFlowControl
-        }
-        set {
-            orsSerialPort.usesDTRDSRFlowControl = newValue
-        }
-    }
-
-    var usesDCDOutputFlowControl: Bool {
-        get {
-            orsSerialPort.usesDCDOutputFlowControl
-        }
-        set {
-            orsSerialPort.usesDCDOutputFlowControl = newValue
-        }
-    }
-
-    var rts: Bool {
-        get {
-            orsSerialPort.rts
-        }
-        set {
-            orsSerialPort.rts = newValue
-        }
-    }
-
-    var dtr: Bool {
-        get {
-            orsSerialPort.dtr
-        }
-        set {
-            orsSerialPort.dtr = newValue
-        }
-    }
-
-    var cts: Bool {
-        orsSerialPort.cts
-    }
-
-    var dsr: Bool {
-        orsSerialPort.dsr
-    }
-
-    var dcd: Bool {
-        orsSerialPort.dcd
-    }
-
-    var ioKitDevice: io_object_t {
-        orsSerialPort.ioKitDevice
-    }
-
-    // MARK: - Private Properties
-
-    private let orsSerialPort: ORSSerialPort
-
-    required init?(configuration: SerialPortConfiguration) {
-        guard let serialPort = ORSSerialPort(path: configuration.path) else {
-            return nil
-        }
-
-        self.orsSerialPort = serialPort
-
-        self.baudRate = configuration.baudRate
-        self.stopBits = configuration.stopBits
-        self.dataBits = configuration.dataBits
-        self.echoesReceivedData = configuration.shouldEchoReceivedData
-        self.parity = configuration.parity
-        self.usesDTRDSRFlowControl = configuration.usesDTRDSRFlowControl
-        self.usesRTSCTSFlowControl = configuration.usesRTSCTSFlowControl
-        self.usesDCDOutputFlowControl = configuration.usesDCDOutputFlowControl
-    }
 
 }
