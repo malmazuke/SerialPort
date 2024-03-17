@@ -58,7 +58,7 @@ public struct SerialPortConfiguration {
 
 }
 
-class DefaultSerialPort: SerialPort {
+class StandardSerialPort: SerialPort {
 
     var isOpen: Bool {
         orsSerialPort.isOpen
