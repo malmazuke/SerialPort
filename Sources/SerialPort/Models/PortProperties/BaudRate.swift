@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum BaudRate {
+public enum BaudRate: Hashable {
 
     case rate0
     case rate50
@@ -34,7 +34,7 @@ public enum BaudRate {
     case rate230400
     case nonStandard(speed: UInt)
 
-    var intValue: UInt {
+    public var intValue: UInt {
         return switch self {
         case .rate0:
             0

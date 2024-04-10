@@ -5,7 +5,7 @@
 //  Created by Mark Feaver on 6/4/2024.
 //
 
-public enum DataBits {
+public enum DataBits: Hashable {
 
     case five
     case six
@@ -30,7 +30,7 @@ public enum DataBits {
 
 }
 
-public extension DataBits {
+extension DataBits {
 
     static func dataBits(with value: UInt) -> DataBits {
         return switch value {

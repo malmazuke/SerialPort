@@ -44,6 +44,7 @@ public class SerialPortManager: SerialPortManaging {
     // MARK: - Private Properties
 
     private var listeners = [ListenerWrapper]()
+    private var connectedDevices: [String: SerialDeviceInfo] = [:]
     private var notificationPort: IONotificationPortRef?
     private var addedIterator: io_iterator_t = 0
     private var removedIterator: io_iterator_t = 0
@@ -129,9 +130,9 @@ public class SerialPortManager: SerialPortManaging {
             defer { IOObjectRelease(device) }
 
             do {
-                // Attempt to extract device information
                 let deviceInfo = try extractDeviceInfo(from: device)
-                // Yield a connected event for this device to all listeners
+                connectedDevices[deviceInfo.portName] = deviceInfo
+
                 listeners.forEach { $0.continuation.yield(.connected(deviceInfo)) }
             } catch {
                 // Yield an error event
@@ -145,12 +146,14 @@ public class SerialPortManager: SerialPortManaging {
             defer { IOObjectRelease(device) }
 
             do {
-                // Attempt to extract device information
-                let deviceInfo = try extractDeviceInfo(from: device)
+                let portName = try extractPortName(from: device)
 
-                // Yield a disconnected event for this device to all listeners
-                for listener in listeners {
-                    listener.continuation.yield(.disconnected(deviceInfo))
+                if let deviceInfo = connectedDevices[portName] {
+                    for listener in listeners {
+                        listener.continuation.yield(.disconnected(deviceInfo))
+                    }
+
+                    connectedDevices.removeValue(forKey: portName)
                 }
             } catch {
                 listeners.forEach { $0.continuation.yield(.error(error)) }
@@ -160,17 +163,9 @@ public class SerialPortManager: SerialPortManaging {
 
     // MARK: - Private Methods - Device Info
 
-    private func extractDeviceInfo(from serialService: io_object_t) throws -> SerialDeviceInfo {
-        guard let portName = IORegistryEntryCreateCFProperty(
-            serialService,
-            kIOCalloutDeviceKey as CFString,
-            kCFAllocatorDefault,
-            0
-        ).takeRetainedValue() as? String else {
-            throw SerialPortError.failedToExtractPortName
-        }
-
-        let usbProperties = extractVendorAndProductIds(from: serialService)
+    private func extractDeviceInfo(from device: io_object_t) throws -> SerialDeviceInfo {
+        let portName = try extractPortName(from: device)
+        let usbProperties = extractVendorAndProductIds(from: device)
         let portProperties = try extractSerialPortProperties(portName: portName)
 
         return SerialDeviceInfo(
@@ -179,6 +174,19 @@ public class SerialPortManager: SerialPortManaging {
             productId: usbProperties.productId,
             portProperties: portProperties
         )
+    }
+
+    private func extractPortName(from device: io_object_t) throws -> String {
+        guard let portName = IORegistryEntryCreateCFProperty(
+            device,
+            kIOCalloutDeviceKey as CFString,
+            kCFAllocatorDefault,
+            0
+        ).takeRetainedValue() as? String else {
+            throw SerialPortError.failedToExtractPortName
+        }
+
+        return portName
     }
 
     private func extractVendorAndProductIds(from device: io_object_t) -> (vendorId: Int?, productId: Int?) {
