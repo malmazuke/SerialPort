@@ -8,7 +8,6 @@
 public enum StopBits {
 
     case one
-    case onePointFive
     case two
 
 }

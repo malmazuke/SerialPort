@@ -32,9 +32,9 @@ public enum BaudRate {
     case rate76800
     case rate115200
     case rate230400
-    case nonStandard(rate: Int)
+    case nonStandard(speed: UInt)
 
-    var intValue: Int {
+    var intValue: UInt {
         return switch self {
         case .rate0:
             0
@@ -82,8 +82,8 @@ public enum BaudRate {
             115200
         case .rate230400:
             230400
-        case .nonStandard(let rate):
-            rate
+        case .nonStandard(let speed):
+            speed
         }
     }
 
@@ -92,8 +92,8 @@ public enum BaudRate {
 public extension BaudRate {
 
     // swiftlint:disable:next cyclomatic_complexity
-    static func rate(with number: NSNumber) -> BaudRate {
-        return switch number.intValue {
+    static func rate(with speed: speed_t) -> BaudRate {
+        return switch speed {
         case 0:
             .rate0
         case 50:
@@ -141,7 +141,7 @@ public extension BaudRate {
         case 230400:
             .rate230400
         default:
-            .nonStandard(rate: number.intValue)
+            .nonStandard(speed: speed)
         }
     }
 

@@ -5,6 +5,7 @@
 //  Created by Mark Feaver on 6/4/2024.
 //
 
+import Darwin
 import Foundation
 import IOKit.serial
 import IOKit.usb
@@ -169,12 +170,14 @@ public class SerialPortManager: SerialPortManaging {
             throw SerialPortError.failedToExtractPortName
         }
 
-        let portProperties = extractVendorAndProductIds(from: serialService)
+        let usbProperties = extractVendorAndProductIds(from: serialService)
+        let portProperties = try extractSerialPortProperties(portName: portName)
 
         return SerialDeviceInfo(
             portName: portName,
-            vendorId: portProperties.vendorId,
-            productId: portProperties.productId
+            vendorId: usbProperties.vendorId,
+            productId: usbProperties.productId,
+            portProperties: portProperties
         )
     }
 
@@ -215,6 +218,76 @@ public class SerialPortManager: SerialPortManaging {
 
         IOObjectRelease(currentDevice) // Release the last parentDevice obtained in the loop
         return (vendorId, productId)
+    }
+
+    private func extractSerialPortProperties(portName: String) throws -> SerialPortProperties {
+        let fileDescriptor = open(portName, O_RDONLY | O_NOCTTY | O_NDELAY)
+        guard fileDescriptor != -1 else {
+            throw SerialPortError.failedToExtractPortProperties
+        }
+
+        defer {
+            close(fileDescriptor)
+        }
+
+        var tty = termios()
+
+        // Get current settings
+        guard tcgetattr(fileDescriptor, &tty) == 0 else {
+            throw SerialPortError.failedToExtractPortProperties
+        }
+
+        // Read and map baud rate
+        let baudRate = BaudRate.rate(with: cfgetispeed(&tty))
+
+        return SerialPortProperties(
+            baudRate: baudRate,
+            dataBits: tty.dataBits,
+            parity: tty.parity,
+            stopBits: tty.stopBits,
+            flowControl: tty.flowControl
+        )
+    }
+
+}
+
+private extension termios {
+
+    var dataBits: DataBits {
+        let controlFlagSetting = (c_cflag & UInt(CSIZE))
+        return DataBits.dataBits(with: UInt(controlFlagSetting))
+    }
+
+    var parity: Parity {
+        let paritySetting = (c_cflag & UInt(PARENB))
+        if paritySetting == 0 {
+            return .none
+        }
+        if (c_cflag & UInt(PARODD)) != 0 {
+            return .odd
+        } else {
+            return .even
+        }
+    }
+
+    var stopBits: StopBits {
+        (c_cflag & UInt(CSTOPB)) != 0 ? .two : .one
+    }
+
+    var flowControl: FlowControl {
+        let hardwareFlowControl = (c_cflag & UInt((CRTS_IFLOW | CCTS_OFLOW))) != 0
+        let softwareFlowControl = (c_iflag & UInt((IXON | IXOFF))) != 0
+
+        switch (hardwareFlowControl, softwareFlowControl) {
+        case (false, false):
+            return .none
+        case (true, false):
+            return .requestToSend
+        case (false, true):
+            return .xOnXOff
+        case (true, true):
+            return .requestToSendXOnXOff
+        }
     }
 
 }

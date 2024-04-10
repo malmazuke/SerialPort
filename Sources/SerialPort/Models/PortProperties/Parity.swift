@@ -10,7 +10,5 @@ public enum Parity {
     case none
     case odd
     case even
-    case mark
-    case space
 
 }
