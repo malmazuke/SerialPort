@@ -1,13 +1,13 @@
 //
-//  BAUDRate.swift
+//  BaudRate.swift
 //
 //
-//  Created by Mark Feaver on 15/3/2024.
+//  Created by Mark Feaver on 6/4/2024.
 //
 
 import Foundation
 
-public enum BAUDRate {
+public enum BaudRate {
 
     case rate0
     case rate50
@@ -89,10 +89,10 @@ public enum BAUDRate {
 
 }
 
-public extension BAUDRate {
+public extension BaudRate {
 
     // swiftlint:disable:next cyclomatic_complexity
-    static func rate(with number: NSNumber) -> BAUDRate {
+    static func rate(with number: NSNumber) -> BaudRate {
         return switch number.intValue {
         case 0:
             .rate0
