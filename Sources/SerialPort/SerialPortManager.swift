@@ -195,7 +195,7 @@ public class SerialPortManager: SerialPortManaging {
         var parentDevice: io_object_t = 0
         var currentDevice = device
 
-        IOObjectRetain(device) // Ensure the original device is retained during traversal
+        IOObjectRetain(device)
 
         while IORegistryEntryGetParentEntry(currentDevice, kIOServicePlane, &parentDevice) == KERN_SUCCESS {
             defer { IOObjectRelease(currentDevice) }
@@ -245,12 +245,12 @@ public class SerialPortManager: SerialPortManaging {
             throw SerialPortError.failedToExtractPortProperties
         }
 
-        // Read and map baud rate
         let baudRate = BaudRate.rate(with: cfgetispeed(&tty))
+        let dataBits = try tty.dataBits()
 
         return SerialPortProperties(
             baudRate: baudRate,
-            dataBits: tty.dataBits,
+            dataBits: dataBits,
             parity: tty.parity,
             stopBits: tty.stopBits,
             flowControl: tty.flowControl
@@ -261,9 +261,20 @@ public class SerialPortManager: SerialPortManaging {
 
 private extension termios {
 
-    var dataBits: DataBits {
-        let controlFlagSetting = (c_cflag & UInt(CSIZE))
-        return DataBits.dataBits(with: UInt(controlFlagSetting))
+    func dataBits() throws -> DataBits {
+        let dataBits = (c_cflag & UInt(CSIZE))
+        switch dataBits {
+        case UInt(CS5):
+            return .five
+        case UInt(CS6):
+            return .six
+        case UInt(CS7):
+            return .seven
+        case UInt(CS8):
+            return .eight
+        default:
+            throw SerialPortError.undefinedDataBits(dataBits)
+        }
     }
 
     var parity: Parity {

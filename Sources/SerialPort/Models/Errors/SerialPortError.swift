@@ -9,4 +9,5 @@ enum SerialPortError: Error {
     case failedToEnumerateDevices
     case failedToExtractPortName
     case failedToExtractPortProperties
+    case undefinedDataBits(UInt)
 }

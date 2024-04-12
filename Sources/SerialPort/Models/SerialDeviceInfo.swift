@@ -12,9 +12,29 @@ public struct SerialDeviceInfo: Identifiable, Hashable {
     public let productId: Int?
     public let baudRate: BaudRate
     public let dataBits: DataBits
-    public let parity: Parity
     public let stopBits: StopBits
+    public let parity: Parity
     public let flowControl: FlowControl
+
+    public init(
+        portName: String,
+        vendorId: Int?,
+        productId: Int?,
+        baudRate: BaudRate,
+        dataBits: DataBits,
+        stopBits: StopBits,
+        parity: Parity,
+        flowControl: FlowControl
+    ) {
+        self.portName = portName
+        self.vendorId = vendorId
+        self.productId = productId
+        self.baudRate = baudRate
+        self.dataBits = dataBits
+        self.stopBits = stopBits
+        self.parity = parity
+        self.flowControl = flowControl
+    }
 
     public var id: String {
         "\(portName)-\(displayableVendorId ?? "0")-\(displayableProductId ?? "0")"
@@ -57,8 +77,8 @@ extension SerialDeviceInfo {
             productId: productId,
             baudRate: portProperties.baudRate,
             dataBits: portProperties.dataBits,
-            parity: portProperties.parity,
             stopBits: portProperties.stopBits,
+            parity: portProperties.parity,
             flowControl: portProperties.flowControl
         )
     }

@@ -38,7 +38,16 @@ struct DeviceListView: View {
             .frame(minWidth: 250)
             .navigationTitle("Devices")
 
-            DeviceDetailView(device: viewModel.selectedDevice)
+            detailView
+        }
+    }
+
+    @ViewBuilder
+    private var detailView: some View {
+        if let selectedDevice = viewModel.selectedDevice {
+            DeviceDetailView(viewModel: DeviceDetailViewModel(device: selectedDevice))
+        } else {
+            EmptyDeviceDetailView()
         }
     }
 

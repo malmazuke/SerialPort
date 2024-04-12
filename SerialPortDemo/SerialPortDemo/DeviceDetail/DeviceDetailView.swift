@@ -8,32 +8,37 @@
 import SerialPort
 import SwiftUI
 
+@MainActor
 struct DeviceDetailView: View {
-    var device: SerialDeviceInfo?
+    var viewModel: DeviceDetailViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            if let device = device {
-                Text("Port: \(device.portName)").font(.headline)
-                Text("Vendor ID: \(formatId(device.vendorId))")
-                Text("Product ID: \(formatId(device.productId))")
-                Text("Baud Rate: \(device.baudRate.intValue)")
-            } else {
-                Text("Select a device to see its details.")
-            }
+            Text("Port: \(viewModel.portName)").font(.headline)
+            Text("Vendor ID: \(viewModel.vendorId)")
+            Text("Product ID: \(viewModel.productId)")
+            Text("Baud Rate: \(viewModel.baudRate)")
+            Text("Data Bits: \(viewModel.dataBits)")
+            Text("Stop Bits: \(viewModel.stopBits)")
+            Text("Parity: \(viewModel.parity)")
+            Text("Flow Control: \(viewModel.flowControl)")
         }
         .padding()
-        .navigationTitle(device?.portName ?? "Device Details")
+        .navigationTitle(viewModel.portName)
     }
-    
-    private func formatId(_ id: Int?) -> String {
-        guard let id else {
-            return "Unknown"
-        }
-        return String(format: "%04X", id)
-    }
+
 }
 
 #Preview {
-    DeviceDetailView()
+    let testDevice = SerialDeviceInfo(
+        portName: "/dev/abc-123",
+        vendorId: 1234,
+        productId: 4321,
+        baudRate: .rate9600,
+        dataBits: .eight,
+        stopBits: .one,
+        parity: .none,
+        flowControl: .none
+    )
+    return DeviceDetailView(viewModel: DeviceDetailViewModel(device: testDevice))
 }

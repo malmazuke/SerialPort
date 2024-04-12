@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		9B7045372BC65DE300EDBCD9 /* DeviceListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B7045362BC65DE300EDBCD9 /* DeviceListViewModel.swift */; };
 		9B7045392BC6638D00EDBCD9 /* DeviceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B7045382BC6638D00EDBCD9 /* DeviceDetailView.swift */; };
+		9B70453D2BC8B14300EDBCD9 /* DeviceDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B70453C2BC8B14300EDBCD9 /* DeviceDetailViewModel.swift */; };
+		9B7045412BC8B81000EDBCD9 /* EmptyDeviceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B7045402BC8B81000EDBCD9 /* EmptyDeviceDetailView.swift */; };
 		9B8CA1912BC640B1000325C5 /* SerialPortDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8CA1902BC640B1000325C5 /* SerialPortDemoApp.swift */; };
 		9B8CA1932BC640B1000325C5 /* DeviceListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8CA1922BC640B1000325C5 /* DeviceListView.swift */; };
 		9B8CA1952BC640B2000325C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B8CA1942BC640B2000325C5 /* Assets.xcassets */; };
@@ -39,6 +41,8 @@
 /* Begin PBXFileReference section */
 		9B7045362BC65DE300EDBCD9 /* DeviceListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceListViewModel.swift; sourceTree = "<group>"; };
 		9B7045382BC6638D00EDBCD9 /* DeviceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailView.swift; sourceTree = "<group>"; };
+		9B70453C2BC8B14300EDBCD9 /* DeviceDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailViewModel.swift; sourceTree = "<group>"; };
+		9B7045402BC8B81000EDBCD9 /* EmptyDeviceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyDeviceDetailView.swift; sourceTree = "<group>"; };
 		9B8CA18D2BC640B1000325C5 /* SerialPortDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SerialPortDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B8CA1902BC640B1000325C5 /* SerialPortDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialPortDemoApp.swift; sourceTree = "<group>"; };
 		9B8CA1922BC640B1000325C5 /* DeviceListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceListView.swift; sourceTree = "<group>"; };
@@ -91,6 +95,8 @@
 			isa = PBXGroup;
 			children = (
 				9B7045382BC6638D00EDBCD9 /* DeviceDetailView.swift */,
+				9B70453C2BC8B14300EDBCD9 /* DeviceDetailViewModel.swift */,
+				9B7045402BC8B81000EDBCD9 /* EmptyDeviceDetailView.swift */,
 			);
 			path = DeviceDetail;
 			sourceTree = "<group>";
@@ -290,9 +296,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B8CA1932BC640B1000325C5 /* DeviceListView.swift in Sources */,
+				9B70453D2BC8B14300EDBCD9 /* DeviceDetailViewModel.swift in Sources */,
 				9B8CA1912BC640B1000325C5 /* SerialPortDemoApp.swift in Sources */,
 				9B7045372BC65DE300EDBCD9 /* DeviceListViewModel.swift in Sources */,
 				9B7045392BC6638D00EDBCD9 /* DeviceDetailView.swift in Sources */,
+				9B7045412BC8B81000EDBCD9 /* EmptyDeviceDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

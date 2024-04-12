@@ -5,46 +5,16 @@
 //  Created by Mark Feaver on 6/4/2024.
 //
 
-public enum DataBits: Hashable {
+/// Represents the number of data bits in each character for serial communication.
+public enum DataBits: UInt {
 
-    case five
-    case six
-    case seven
-    case eight
-    case nonStandard(bits: UInt)
-
-    var intValue: UInt {
-        return switch self {
-        case .five:
-            5
-        case .six:
-            6
-        case .seven:
-            7
-        case .eight:
-            8
-        case .nonStandard(bits: let bits):
-            bits
-        }
-    }
-
-}
-
-extension DataBits {
-
-    static func dataBits(with value: UInt) -> DataBits {
-        return switch value {
-        case 5:
-            .five
-        case 6:
-            .six
-        case 7:
-            .seven
-        case 8:
-            .eight
-        default:
-            .nonStandard(bits: value)
-        }
-    }
+    /// Five data bits per character.
+    case five = 5
+    /// Six data bits per character.
+    case six = 6
+    /// Seven data bits per character.
+    case seven = 7
+    /// Eight data bits per character.
+    case eight = 8
 
 }
